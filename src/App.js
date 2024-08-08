@@ -1,4 +1,4 @@
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState, useReducer, useMemo } from "react";
 import Navbar from "./components/Navbar";
 import Card from "./components/Card";
 import "./App.css";
@@ -46,8 +46,8 @@ function reducer(state, action) {
 function App() {
 	const [state, dispatch] = useReducer(reducer, initialState);
 
-	useEffect(() => {
-		console.log("state", state);
+	const count = useMemo(() => {
+		return `You have ${state.items.length} image${state.items.length > 1 ? "s" : ""}`;
 	}, [state.items]);
 
 	function toggle(bool) {
@@ -67,11 +67,11 @@ function App() {
 	return (
 		<>
 			<Layout state={state} onChange={handleChange} onSubmit={handleSubmit} toggle={toggle}>
-				<h1>Gallery</h1>
-				{`You have ${state.items.length} image${state.items.length > 1 ? "s" : ""}`}
+				<h1 className="text-center">Gallery</h1>
+				{count}
 				<div className="row">
-					{state.items.map((photo) => (
-						<Card src={photo.path} />
+					{state.items.map((photo, index) => (
+						<Card key={index} {...photo} />
 					))}
 				</div>
 			</Layout>
