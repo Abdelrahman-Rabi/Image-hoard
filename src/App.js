@@ -3,6 +3,7 @@ import Navbar from "./components/Navbar";
 import Card from "./components/Card";
 import "./App.css";
 import UploadForm from "./components/UploadForm";
+import Layout from "./components/Layout";
 
 const photos = [];
 
@@ -25,6 +26,7 @@ function reducer(state, action) {
 			return {
 				...state,
 				items: [state.inputs, ...state.items],
+				inputs: { title: null, file: null, path: null },
 			};
 		case "setInputs":
 			return {
@@ -64,13 +66,7 @@ function App() {
 
 	return (
 		<>
-			<Navbar />
-			<div className="container text-center mt-5">
-				<button className="btn btn-success float-end" onClick={() => toggle(!state.isCollapsed)}>
-					{state.isCollapsed ? "Close" : "+Add"}
-				</button>
-				<div className="clearfix mb-4"></div>
-				<UploadForm inputs={state.inputs} isVisible={state.isCollapsed} onChange={handleChange} onSubmit={handleSubmit} />
+			<Layout state={state} onChange={handleChange} onSubmit={handleSubmit} toggle={toggle}>
 				<h1>Gallery</h1>
 				{`You have ${state.items.length} image${state.items.length > 1 ? "s" : ""}`}
 				<div className="row">
@@ -78,7 +74,7 @@ function App() {
 						<Card src={photo.path} />
 					))}
 				</div>
-			</div>
+			</Layout>
 		</>
 	);
 }
