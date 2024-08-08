@@ -1,8 +1,6 @@
-import { useEffect, useState, useReducer, useMemo } from "react";
-import Navbar from "./components/Navbar";
+import { useReducer, useMemo } from "react";
 import Card from "./components/Card";
 import "./App.css";
-import UploadForm from "./components/UploadForm";
 import Layout from "./components/Layout";
 
 const photos = [];
