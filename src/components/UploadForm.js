@@ -1,5 +1,10 @@
 import { useContext, useMemo } from "react";
 import { Context } from "../context";
+import fireStore from "../handlers/firestore";
+import Storage from "../handlers/storage";
+
+const { writeDoc } = fireStore;
+const { uploadFile, downloadFile } = Storage;
 
 const Preview = () => {
 	const { state } = useContext(Context);
@@ -21,15 +26,23 @@ const Preview = () => {
 
 const UploadForm = () => {
 	const { state, dispatch } = useContext(Context);
+	const { inputs, isCollapsed } = state;
 
 	const isDisabled = useMemo(() => {
-		return !!Object.values(state.inputs).some((input) => !input);
-	}, [state.inputs]);
+		return !!Object.values(inputs).some((input) => !input);
+	}, [inputs]);
 
 	function handleSubmit(e) {
 		e.preventDefault();
-		dispatch({ type: "setItem" });
-		dispatch({ type: "collapse", payload: { bool: false } });
+		uploadFile(state.inputs)
+			.then(downloadFile)
+			.then((url) => {
+				debugger;
+				writeDoc({ ...inputs, path: url }, "stocks").then(() => {
+					dispatch({ type: "setItem" });
+					dispatch({ type: "collapse", payload: { bool: false } });
+				});
+			});
 	}
 
 	function handleChange(e) {
@@ -37,7 +50,7 @@ const UploadForm = () => {
 	}
 
 	return (
-		state.isCollapsed && (
+		isCollapsed && (
 			<>
 				<p className="display-6 text-center mb-3">Upload Stock Image</p>
 				<div className="mb-5 d-flex align-items-center justify-content-center">

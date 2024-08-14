@@ -1,7 +1,8 @@
 import { createContext, useReducer } from "react";
-
+import firestore from "./handlers/firestore";
 export const Context = createContext();
 
+const { readDocs } = firestore;
 const photos = [];
 
 const initialState = {
@@ -17,13 +18,17 @@ const handleChange = (state, e) => {
 };
 
 function reducer(state, action) {
-	console.log("action: ", action);
 	switch (action.type) {
 		case "setItem":
 			return {
 				...state,
 				items: [state.inputs, ...state.items],
 				inputs: { title: null, file: null, path: null },
+			};
+		case "setItems":
+			return {
+				...state,
+				items: action.payload.items,
 			};
 		case "setInputs":
 			return {
@@ -42,8 +47,11 @@ function reducer(state, action) {
 
 const Provider = ({ children }) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
-
-	return <Context.Provider value={{ state, dispatch }}>{children}</Context.Provider>;
+	const read = async () => {
+		const items = await readDocs("stocks");
+		dispatch({ type: "setItems", payload: { items } });
+	};
+	return <Context.Provider value={{ state, dispatch, read }}>{children}</Context.Provider>;
 };
 
 export default Provider;
