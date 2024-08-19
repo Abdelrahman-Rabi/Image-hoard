@@ -1,6 +1,5 @@
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../lib/firebase.config";
-console.log("storage: ", storage);
 
 const Storage = {
 	uploadFile(media) {

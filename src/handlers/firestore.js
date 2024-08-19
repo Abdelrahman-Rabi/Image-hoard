@@ -29,8 +29,8 @@ const fireStore = {
 					title: inputs.title,
 					path: inputs.path,
 					createdAt: serverTimestamp(),
+					user: inputs.user,
 				});
-				console.log("Document successfully written!");
 				resolve("new doc successfully inserted");
 			} catch (e) {
 				console.error("Error writing document: ", e);

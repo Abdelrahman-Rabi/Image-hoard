@@ -1,7 +1,8 @@
 import { useContext, useMemo } from "react";
-import { Context } from "../context";
+import { Context } from "../context/FirestoreContext";
 import fireStore from "../handlers/firestore";
 import Storage from "../handlers/storage";
+import { useAuthContext } from "../context/AuthContext";
 
 const { writeDoc } = fireStore;
 const { uploadFile, downloadFile } = Storage;
@@ -25,21 +26,22 @@ const Preview = () => {
 };
 
 const UploadForm = () => {
-	const { state, dispatch } = useContext(Context);
+	const { state, dispatch, read } = useContext(Context);
 	const { inputs, isCollapsed } = state;
+	const { currentUser } = useAuthContext();
 
 	const isDisabled = useMemo(() => {
 		return !!Object.values(inputs).some((input) => !input);
 	}, [inputs]);
 
+	const username = currentUser?.displayName.split(" ").join("");
 	function handleSubmit(e) {
 		e.preventDefault();
 		uploadFile(state.inputs)
 			.then(downloadFile)
 			.then((url) => {
-				debugger;
-				writeDoc({ ...inputs, path: url }, "stocks").then(() => {
-					dispatch({ type: "setItem" });
+				writeDoc({ ...inputs, path: url, user: username.toLowerCase() }, "stocks").then(() => {
+					read();
 					dispatch({ type: "collapse", payload: { bool: false } });
 				});
 			});

@@ -1,5 +1,6 @@
 import { createContext, useReducer } from "react";
-import firestore from "./handlers/firestore";
+import firestore from "../handlers/firestore";
+
 export const Context = createContext();
 
 const { readDocs } = firestore;
