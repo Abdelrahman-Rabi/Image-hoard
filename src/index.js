@@ -7,6 +7,8 @@ import AuthProvider, { useAuthContext } from "./context/AuthContext";
 import Layout from "./components/Layout";
 import StockImages from "./components/StockImages";
 import Single from "./components/Single";
+import NotFound from "./components/NotFound";
+import Profile from "./components/Profile";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
@@ -17,6 +19,8 @@ const AppRouts = () => {
 		<Routes>
 			<Route path="/" element={<App />} />
 			<Route path="images/:id" element={<Single />} />
+			<Route path="*" element={<NotFound />} />
+			<Route path="/profile" element={<Profile />} />
 			{currentUser && <Route path="/stockImages" element={<StockImages />} />}
 		</Routes>
 	);
