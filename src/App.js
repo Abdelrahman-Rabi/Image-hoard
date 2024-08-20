@@ -1,10 +1,9 @@
-import { useReducer, useMemo, useContext, useEffect } from "react";
+import { useMemo, useContext, useEffect } from "react";
 import Card from "./components/Card";
-import fireStore from "./handlers/firestore";
 import "./App.css";
-import Layout from "./components/Layout";
 import { Context } from "./context/FirestoreContext";
 import { useAuthContext } from "./context/AuthContext";
+import List from "./components/List";
 
 function App() {
 	const { state, read } = useContext(Context);
@@ -15,20 +14,14 @@ function App() {
 
 	useEffect(() => {
 		read();
-		authenticate()
+		authenticate();
 	}, []);
 
 	return (
 		<>
-			<Layout>
-				<h1 className="text-center">Gallery</h1>
-				{count}
-				<div className="row">
-					{state.items.map((photo, index) => (
-						<Card key={index} {...photo} />
-					))}
-				</div>
-			</Layout>
+			<h1 className="text-center">Gallery</h1>
+			{count}
+			<List items={state.items} />
 		</>
 	);
 }
