@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from "react";
+import { createContext, useContext, useMemo, useReducer } from "react";
 import firestore from "../handlers/firestore";
 
 export const Context = createContext();
@@ -8,6 +8,7 @@ const photos = [];
 
 const initialState = {
 	items: photos,
+	placeholders: photos,
 	inputs: { title: null, file: null, path: null },
 	isCollapsed: false,
 };
@@ -24,12 +25,19 @@ function reducer(state, action) {
 			return {
 				...state,
 				items: [state.inputs, ...state.items],
+				placeholders: [state.inputs, ...state.items],
 				inputs: { title: null, file: null, path: null },
 			};
 		case "setItems":
 			return {
 				...state,
 				items: action.payload.items,
+				placeholders: action.payload.items,
+			};
+		case "filterItems":
+			return {
+				...state,
+				items: action.payload.results,
 			};
 		case "setInputs":
 			return {
@@ -48,11 +56,31 @@ function reducer(state, action) {
 
 const Provider = ({ children }) => {
 	const [state, dispatch] = useReducer(reducer, initialState);
+
 	const read = async () => {
 		const items = await readDocs("stocks");
 		dispatch({ type: "setItems", payload: { items } });
 	};
-	return <Context.Provider value={{ state, dispatch, read }}>{children}</Context.Provider>;
+
+	const filterItems = (input) => {
+		if (input == "" || !!input) {
+			dispatch({ type: "setItems", payload: { items: state.placeholders } });
+		}
+		const list = state.placeholders.flat();
+		let results = list.filter((item) => {
+			const name = item.title.toLowerCase();
+
+			const searchInput = input.toLowerCase();
+			return name.indexOf(searchInput) > -1;
+		});
+		dispatch({ type: "filterItems", payload: { results } });
+	};
+
+	const value = useMemo(() => {
+		return { state, dispatch, read, filterItems };
+	}, [state, dispatch, read, filterItems]);
+
+	return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export const useFirestoreContext = () => {
